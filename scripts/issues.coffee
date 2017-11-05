@@ -5,7 +5,7 @@
 #     $ export HUBOT_GITHUB_TOEKN=token_value
 #
 # Commands:
-#   hubotslack issue list - list up issues
+#   hubotslack listar issues - list up issues
 #
 
 repo  = "BEEVA-bots-poc"
@@ -13,7 +13,7 @@ repo  = "BEEVA-bots-poc"
 module.exports = (robot) ->
   github = require('githubot')(robot)
 
-  robot.respond /issue list/i, (msg) ->
+  robot.respond /listar issues/i, (msg) ->
     github.get "https://api.github.com/repos/#{repo}/issues", {}, (issues) ->
       issues = issues.sort (a,b) -> a.number > b.number
       texts = ["https://github.com/#{repo}/issues"]
