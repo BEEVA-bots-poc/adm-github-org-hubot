@@ -15,45 +15,44 @@ module.exports = (robot) ->
   robot.respond /Quiero ver la número (.*)/i, (msg) ->
     numberIssue = msg.match[1]
     github.get "https://api.github.com/repos/#{repo}/access/issues/#{numberIssue}", {}, (issue) ->
-      msg.reply "[#{issue.number}] #{issue.title} realizada por #{issue.user.login} con el contenido #{issue.body}"
-
-  robot.respond /test/i, (msg) ->
-    msg.send({
-	    "text": "Would you like to play a game?",
-	    "attachments": [
-	      {
-	        "text": "Choose a game to play",
-	        "fallback": "You are unable to choose a game",
-	        "callback_id": "wopr_game",
-	        "color": "#3AA3E3",
-	        "attachment_type": "default",
-	        "actions": [
-	          {
-	            "name": "game",
-	            "text": "Chess",
-	            "type": "button",
-	            "value": "chess"
-	          },
-	          {
-	            "name": "game",
-	            "text": "Falken's Maze",
-	            "type": "button",
-	            "value": "maze"
-	          },
-	          {
-	            "name": "game",
-	            "text": "Thermonuclear War",
-	            "style": "danger",
-	            "type": "button",
-	            "value": "war",
-	            "confirm": {
-	              "title": "Are you sure?",
-	              "text": "Wouldn't you prefer a good game of chess?",
-	              "ok_text": "Yes",
-	              "dismiss_text": "No"
-	            }
-	          }
-	        ]
-	      }
-	    ]
-	  })
+			msg.send({
+		    "text": "[#{issue.number}] #{issue.title} realizada por #{issue.user.login} con el contenido #{issue.body}",
+		    "attachments": [
+		      {
+		        "text": "#{issue.body}",
+		        "fallback": "You are unable to choose an action to issue",
+		        "callback_id": "wopr_issue",
+		        "color": "#3AA3E3",
+		        "attachment_type": "default",
+		        "actions": [
+		          {
+		            "name": "issue",
+		            "text": "Aceptar",
+		            "type": "button",
+								"style": "good",
+		            "value": "accept"
+		          },
+		          {
+		            "name": "issue",
+		            "text": "Responder",
+		            "type": "button",
+								"style": "warning",
+		            "value": "respond"
+		          },
+		          {
+		            "name": "issue",
+		            "text": "Rechazar",
+		            "style": "danger",
+		            "type": "button",
+		            "value": "discard",
+		            "confirm": {
+		              "title": "¿Rechazar issue?",
+		              "text": "¿Estás seguro que deseas rechazar la issue?",
+		              "ok_text": "Yes",
+		              "dismiss_text": "No"
+		            }
+		          }
+		        ]
+		      }
+		    ]
+		  })
