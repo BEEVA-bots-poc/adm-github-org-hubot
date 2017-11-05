@@ -17,30 +17,43 @@ module.exports = (robot) ->
     github.get "https://api.github.com/repos/#{repo}/access/issues/#{numberIssue}", {}, (issue) ->
       msg.reply "[#{issue.number}] #{issue.title} realizada por #{issue.user.login} con el contenido #{issue.body}"
 
-  robot.respond /Quiero ver la número (.*)/i, (msg) ->
-    numberIssue = msg.match[1]
-    github.get "https://api.github.com/repos/#{repo}/access/issues/#{numberIssue}", {}, (issue) ->
-      msg.reply "[#{issue.number}] #{issue.title} realizada por #{issue.user.login} con el contenido #{issue.body}"
-      robot.emit 'slack.attachment',
-        message: msg.message
-        content:
-          # see https://api.slack.com/docs/attachments
-          text: "Attachment text"
-          fallback: "Attachment fallback"
-          attachments: [
-            {
-              "text": "Choose a game to play",
-              "fallback": "You are unable to choose a game",
-              "callback_id": "wopr_game",
-              "color": "#3AA3E3",
-              "attachment_type": "default",
-              "actions": [
-                {
-                  "name": "game",
-                  "text": "Chess",
-                  "type": "button",
-                  "value": "chess"
-                }
-								]
-							}
-            ]
+  robot.respond /Pinta boton/i, (msg) ->
+    msg.reply({
+    "text": "Would you like to play a game?",
+    "attachments": [
+      {
+        "text": "Choose a game to play",
+        "fallback": "You are unable to choose a game",
+        "callback_id": "wopr_game",
+        "color": "#3AA3E3",
+        "attachment_type": "default",
+        "actions": [
+          {
+            "name": "game",
+            "text": "Chess",
+            "type": "button",
+            "value": "chess"
+          },
+          {
+            "name": "game",
+            "text": "Falken's Maze",
+            "type": "button",
+            "value": "maze"
+          },
+          {
+            "name": "game",
+            "text": "Thermonuclear War",
+            "style": "danger",
+            "type": "button",
+            "value": "war",
+            "confirm": {
+              "title": "Are you sure?",
+              "text": "Wouldn't you prefer a good game of chess?",
+              "ok_text": "Yes",
+              "dismiss_text": "No"
+            }
+          }
+        ]
+      }
+     ]
+    })
