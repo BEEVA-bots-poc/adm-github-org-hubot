@@ -14,7 +14,7 @@ module.exports = (robot) ->
   github = require('githubot')(robot)
 
   robot.respond /listar issues/i, (msg) ->
-    github.get "https://api.github.com/repos/#{repo}/issues", {}, (issues) ->
+    github.get "https://api.github.com/repos/#{repo}/issues?client_id=ade66cfc15643918f9cc&client_secret=005e038f42787e5d1521a4ec2114ae01e347a0cb", {}, (issues) ->
       issues = issues.sort (a,b) -> a.number > b.number
       texts = ["https://github.com/#{repo}/issues"]
       for i in issues
