@@ -18,7 +18,7 @@ module.exports = (robot) ->
       msg.reply "[#{issue.number}] #{issue.title} realizada por #{issue.user.login} con el contenido #{issue.body}"
 
   robot.respond /test/i, (msg) ->
-    res.send({
+    msg.send({
 	    "text": "Would you like to play a game?",
 	    "attachments": [
 	      {
