@@ -25,7 +25,7 @@ module.exports = (robot) ->
     else if respondUser is "Responder"
       res.reply "Vamos a Responder issue #{numberIssue}"
     else
-      github.put "https://api.github.com/repos/#{repo}/issues/#{numberIssue}/lock", {state: "closed"}, (issue, error) ->
+      github.patch "https://api.github.com/repos/#{repo}/issues/#{numberIssue}", {state: "closed"}, (issue, error) ->
        if error then console.log error
        text = "OK. he bloqueado la issue #{numberIssue}"
-       msg.reply text
+       res.reply text
