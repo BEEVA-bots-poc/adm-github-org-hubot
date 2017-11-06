@@ -27,5 +27,5 @@ module.exports = (robot) ->
     else
       github.put "https://api.github.com/repos/#{repo}/issues/#{numberIssue}/lock", {state: "closed"}, (issue, error) ->
        if error then console.log error
-       text = "OK. I closed #{issue.title} issue"
+       text = "OK. I closed issue"
        msg.reply text
