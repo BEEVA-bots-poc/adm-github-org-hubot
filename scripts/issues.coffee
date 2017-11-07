@@ -28,8 +28,9 @@ module.exports = (robot) ->
     numberIssue = res.match[2]
     if respondUser is "Aceptar"
       res.reply "Vamos a aceptar issue #{numberIssue}"
-       github.put "https://api.github.com/repos/#{repo}/contents/CONTRIBUTORS.json", {message: "my commit message", committer: {name: "Julian",email: "julian.perez@beeva.com"},content: "SG9sYSBtdW5kbw",sha: "808069a0070722f7f08e738e42b7f365865e4fe8"}, (issue) ->
-        res.send "Usuario Añadido =)"
+      param = {message: "my commit message", content: "SG9sYSBtdW5kbw", sha: "808069a0070722f7f08e738e42b7f365865e4fe8"}
+      github.put "https://api.github.com/repos/#{repo}/contents/CONTRIBUTORS.json", param, (issue) ->
+       res.send "Usuario Añadido =)"
     else if respondUser is "Responder"
       res.reply "Vamos a Responder issue #{numberIssue}"
     else
