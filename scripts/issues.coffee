@@ -34,8 +34,8 @@ module.exports = (robot) ->
         name: "Julian Perez",
         email: "julian.perez@beeva.com"
        },
-       content: "bXkgbmV3IGZpbGUgY29udGVudHM=",
-       sha: "e2NvbnRyaWJ1dG9yczpbe25hbWU6Ikp1bGlhbiIsIGVtYWlsOiJqdWxpYW4ucGVyZXpAYmVldmEuY29tIiwgZ2l0OiJiZWV2YS1qdWxpYW5wZXJleiJ9XX0="
+       content: "e2NvbnRyaWJ1dG9yczpbe25hbWU6Ikp1bGlhbiIsIGVtYWlsOiJqdWxpYW4ucGVyZXpAYmVldmEuY29tIiwgZ2l0OiJiZWV2YS1qdWxpYW5wZXJleiJ9XX0==",
+       sha: "0d5a690c8fad5e605a6e8766295d9d459d65de42"
       }
       github.put "https://api.github.com/repos/#{repo}/contents/CONTRIBUTORS.json", param, (issue) ->
        res.send "Usuario Añadido =)"
