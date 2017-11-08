@@ -18,9 +18,9 @@ module.exports = (robot) ->
       msg.reply "[#{issue.number}] #{issue.title} realizada por #{issue.user.login} con el contenido #{issue.body}\n¿Que deseas hacer con esta issue?\n1. Aceptar issue\n2. Responder issue\n3. Declinar issue\n"
 
   robot.respond /Quiero ver los usuarios del sistema/i, (msg) ->
-    msg.http('https://raw.githubusercontent.com/BEEVA-bots-poc/access/master/CONTRIBUTORS.json').get() (err, httpRes, body) ->
-     users = JSON.parse body
-     for i, index in users.contributors
+    github.get "https://api.github.com/repos/#{repo}/contents/CONTRIBUTORS.json", {}, (contributors) ->
+     content = JSON.parse new Buffer(contributors.content, 'base64').toString()
+     for i, index in  content.contributors
       msg.send "Usuario del sistema número #{index + 1}: #{i.name}"
 
   robot.respond /Quiero (.*) issue número (.*)/i, (res) ->
@@ -41,7 +41,9 @@ module.exports = (robot) ->
           sha: infoCommit.sha
          }
          github.put "https://api.github.com/repos/#{repo}/contents/CONTRIBUTORS.json", param, (issue) ->
-          res.send "Usuario Añadido =)"
+          res.send "----- ACEPTANDO ISSUE ----"
+          github.patch "https://api.github.com/repos/#{repo}/issues/#{numberIssue}", {state: "closed"}, (issue, error) ->
+           res.reply "OK. He aceptado la issue #{numberIssue} y he añadido el usuario al contributors"
     else if respondUser is "Responder"
       res.reply "Vamos a Responder issue #{numberIssue}"
     else
