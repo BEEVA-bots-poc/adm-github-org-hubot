@@ -34,7 +34,8 @@ module.exports = (robot) ->
         name: "Julian Perez",
         email: "julian.perez@beeva.com"
        },
-       content: "bXkgbmV3IGZpbGUgY29udGVudHM="
+       content: "bXkgbmV3IGZpbGUgY29udGVudHM=",
+       sha: "2e13f45c359dc222b2b6add943f7ae1c53418a18"
       }
       github.put "https://api.github.com/repos/#{repo}/contents/CONTRIBUTORS.json", param, (issue) ->
        res.send "Usuario Añadido =)"
