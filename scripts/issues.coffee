@@ -20,7 +20,6 @@ module.exports = (robot) ->
   robot.respond /Quiero ver los usuarios del sistema/i, (msg) ->
     msg.http('https://raw.githubusercontent.com/BEEVA-bots-poc/access/master/CONTRIBUTORS.json').get() (err, httpRes, body) ->
      users = JSON.parse body
-     msg.send decodeURIComponent JSON.stringify users
      for i, index in users.contributors
       msg.send "Usuario del sistema número #{index + 1}: #{i.name}"
 
@@ -30,12 +29,12 @@ module.exports = (robot) ->
     if respondUser is "Aceptar"
       res.send "Vamos a aceptar issue #{numberIssue}"
       github.get "https://api.github.com/repos/#{repo}/issues/#{numberIssue}", {}, (issue) ->
-       messageToCommit = decodeURIComponent JSON.stringify JSON.parse issue.body
+       messageToCommit = JSON.parse issue.body
        res.http('https://raw.githubusercontent.com/BEEVA-bots-poc/access/master/CONTRIBUTORS.json').get() (err, httpRes, body) ->
         users = JSON.parse body
         users.contributors.push (messageToCommit)
         github.get "https://api.github.com/repos/#{repo}/contents/CONTRIBUTORS.json", {}, (infoCommit) ->
-         contentCommit = new Buffer(decodeURIComponent JSON.stringify users).toString('base64')
+         contentCommit = new Buffer(JSON.stringify users).toString('base64')
          param = {
           message: "Added new User to repo",
           content: contentCommit,
