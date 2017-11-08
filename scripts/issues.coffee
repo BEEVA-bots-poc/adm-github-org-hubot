@@ -28,18 +28,21 @@ module.exports = (robot) ->
     numberIssue = res.match[2]
     #console.log(new Buffer('{"contributors":[{"name":"Julian", "email":"julian.perez@beeva.com", "git":"beeva-julianperez"}]}').toString('base64'));
     if respondUser is "Aceptar"
-      res.reply "Vamos a aceptar issue #{numberIssue}"
-      param = {
-       message: "my commit message",
-       committer: {
-        name: "Julian Perez",
-        email: "julian.perez@beeva.com"
-       },
-       content: "eyJjb250cmlidXRvcnMiOlt7Im5hbWUiOiJKdWxpYW4iLCAiZW1haWwiOiJqdWxpYW4ucGVyZXpAYmVldmEuY29tIiwgImdpdCI6ImJlZXZhLWp1bGlhbnBlcmV6In1dfQ==",
-       sha: "0d5a690c8fad5e605a6e8766295d9d459d65de42"
-      }
-      github.put "https://api.github.com/repos/#{repo}/contents/CONTRIBUTORS.json", param, (issue) ->
-       res.send "Usuario Añadido =)"
+      res.send "Vamos a aceptar issue #{numberIssue}"
+      github.get "https://api.github.com/repos/#{repo}/issues/#{numberIssue}", {}, (issue) ->
+       messageToCommit = issue.body
+       res.http('https://raw.githubusercontent.com/BEEVA-bots-poc/access/master/CONTRIBUTORS.json').get() (err, httpRes, body) ->
+        users = JSON.parse body
+        users.contributors.push (messageToCommit)
+        github.get "https://api.github.com/repos/#{repo}/contents/CONTRIBUTORS.json", {}, (infoCommit) ->
+         contentCommit = new Buffer(JSON.stringify users).toString('base64')
+         param = {
+          message: "Added new User to repo",
+          content: contentCommit,
+          sha: infoCommit.sha
+         }
+         github.put "https://api.github.com/repos/#{repo}/contents/CONTRIBUTORS.json", param, (issue) ->
+          res.send "Usuario Añadido =)"
     else if respondUser is "Responder"
       res.reply "Vamos a Responder issue #{numberIssue}"
     else
