@@ -26,11 +26,10 @@ module.exports = (robot) ->
   robot.respond /Quiero (.*) issue número (.*)/i, (res) ->
     respondUser = res.match[1]
     numberIssue = res.match[2]
-    #console.log(new Buffer('{"contributors":[{"name":"Julian", "email":"julian.perez@beeva.com", "git":"beeva-julianperez"}]}').toString('base64'));
     if respondUser is "Aceptar"
       res.send "Vamos a aceptar issue #{numberIssue}"
       github.get "https://api.github.com/repos/#{repo}/issues/#{numberIssue}", {}, (issue) ->
-       messageToCommit = issue.body
+       messageToCommit = JSON.stringify JSON.parse issue.body
        res.http('https://raw.githubusercontent.com/BEEVA-bots-poc/access/master/CONTRIBUTORS.json').get() (err, httpRes, body) ->
         users = JSON.parse body
         users.contributors.push (messageToCommit)
