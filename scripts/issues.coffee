@@ -26,6 +26,7 @@ module.exports = (robot) ->
   robot.respond /Quiero (.*) issue número (.*)/i, (res) ->
     respondUser = res.match[1]
     numberIssue = res.match[2]
+    #console.log(new Buffer('{"contributors":[{"name":"Julian", "email":"julian.perez@beeva.com", "git":"beeva-julianperez"}]}').toString('base64'));
     if respondUser is "Aceptar"
       res.reply "Vamos a aceptar issue #{numberIssue}"
       param = {
@@ -34,7 +35,7 @@ module.exports = (robot) ->
         name: "Julian Perez",
         email: "julian.perez@beeva.com"
        },
-       content: "e2NvbnRyaWJ1dG9yczpbe25hbWU6Ikp1bGlhbiIsIGVtYWlsOiJqdWxpYW4ucGVyZXpAYmVldmEuY29tIiwgZ2l0OiJiZWV2YS1qdWxpYW5wZXJleiJ9XX0==",
+       content: "eyJjb250cmlidXRvcnMiOlt7Im5hbWUiOiJKdWxpYW4iLCAiZW1haWwiOiJqdWxpYW4ucGVyZXpAYmVldmEuY29tIiwgImdpdCI6ImJlZXZhLWp1bGlhbnBlcmV6In1dfQ==",
        sha: "0d5a690c8fad5e605a6e8766295d9d459d65de42"
       }
       github.put "https://api.github.com/repos/#{repo}/contents/CONTRIBUTORS.json", param, (issue) ->
