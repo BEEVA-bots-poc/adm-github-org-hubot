@@ -4,6 +4,7 @@
 # Dependencies:
 #   "githubot": "0.4.x"
 #   "hubot-conversation": "^1.1.1"
+#   "es6-promise": "^4.1.0",
 #
 # Configuration:
 #   HUBOT_GITHUB_REPO
