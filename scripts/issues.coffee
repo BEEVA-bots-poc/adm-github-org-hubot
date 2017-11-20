@@ -99,20 +99,19 @@ module.exports = (robot) ->
       if !userInfo.email
         respondIssue(msg, numberIssue, "Debes rellenar tu email")
       else
-        msg.send "Issue número: #{numberIssue} con issue\n#{userInfo.email}\n#{userInfo.name}\n#{userInfo.login}"
         msg.http('https://raw.githubusercontent.com/BEEVA-bots-poc/access/master/CONTRIBUTORS.json').get() (err, httpRes, body) ->
-        users = JSON.parse body
-        users.contributors.push ({"name":userInfo.name,"email":userInfo.email,"git":userInfo.login})
-        github.get "#{endPointGitHub}/contents/CONTRIBUTORS.json", {}, (infoCommit) ->
-         contentCommit = new Buffer(JSON.stringify users).toString('base64')
-         param = {
-          message: "Added new User to repo",
-          content: contentCommit,
-          sha: infoCommit.sha
-         }
-         github.put "#{endPointGitHub}/contents/CONTRIBUTORS.json", param, (issue) ->
-          github.patch "#{endPointGitHub}/issues/#{numberIssue}", {state: "closed"}, (issue, error) ->
-           msg.send "OK. He aceptado la issue #{numberIssue} y he añadido el usuario al contributors"
+          users = JSON.parse body
+          users.contributors.push ({"name":userInfo.name,"email":userInfo.email,"git":userInfo.login})
+          github.get "#{endPointGitHub}/contents/CONTRIBUTORS.json", {}, (infoCommit) ->
+            contentCommit = new Buffer(JSON.stringify users).toString('base64')
+            param = {
+              message: "Added new User to repo",
+              content: contentCommit,
+              sha: infoCommit.sha
+            }
+            github.put "#{endPointGitHub}/contents/CONTRIBUTORS.json", param, (issue) ->
+              github.patch "#{endPointGitHub}/issues/#{numberIssue}", {state: "closed"}, (issue, error) ->
+                msg.send "OK. He aceptado la issue #{numberIssue} y he añadido el usuario al contributors"
 
   #Method to close issue
   closedIssue = (msg, numberIssue) ->
@@ -158,9 +157,9 @@ module.exports = (robot) ->
   viewUsersInSystem = (msg) ->
     github.get "#{endPointGitHub}/contents/CONTRIBUTORS.json", {}, (contributors) ->
      content = JSON.parse new Buffer(contributors.content, 'base64').toString()
-     for i, index in  content.contributors
-      msg.send "Usuario del sistema número #{index + 1}: #{i.name}"
-      showDialog(msg)
+     for i in  content.contributors
+      msg.send "Usuario del sistema número: #{i.name}"
+    showDialog(msg)
 
   #Method to view specific issue and user can do actions with specific issue
   viewSpecificIssue = (msg, numberIssue) ->
