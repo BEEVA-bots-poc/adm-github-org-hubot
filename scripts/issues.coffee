@@ -35,44 +35,6 @@ module.exports = (robot) ->
   robot.respond /acciones git hub con issues/, (msg) ->
     showDialog(msg, true)
 
-  robot.respond /Quiero ver los usuarios del sistema/i, (msg) ->
-    github.get "#{endPointGitHub}/contents/CONTRIBUTORS.json", {}, (contributors) ->
-     content = JSON.parse new Buffer(contributors.content, 'base64').toString()
-     for i, index in  content.contributors
-      msg.send "Usuario del sistema número #{index + 1}: #{i.name}"
-
-  robot.respond /Quiero (.*) issue número (.*)/i, (res) ->
-    respondUser = res.match[1]
-    numberIssue = res.match[2]
-    if respondUser is "Aceptar"
-      getIssues(numberIssue, {}).then (issue) ->
-       messageToCommit = JSON.parse issue.body
-       res.http('https://raw.githubusercontent.com/BEEVA-bots-poc/access/master/CONTRIBUTORS.json').get() (err, httpRes, body) ->
-        users = JSON.parse body
-        users.contributors.push (messageToCommit)
-        github.get "#{endPointGitHub}/contents/CONTRIBUTORS.json", {}, (infoCommit) ->
-         contentCommit = new Buffer(JSON.stringify users).toString('base64')
-         param = {
-          message: "Added new User to repo",
-          content: contentCommit,
-          sha: infoCommit.sha
-         }
-         github.put "#{endPointGitHub}/contents/CONTRIBUTORS.json", param, (issue) ->
-          res.send "----- ACEPTANDO ISSUE ----"
-          github.patch "#{endPointGitHub}/issues/#{numberIssue}", {state: "closed"}, (issue, error) ->
-           res.send "OK. He aceptado la issue #{numberIssue} y he añadido el usuario al contributors"
-    else if respondUser is "Responder"
-      param = {
-       body: "El formato de la issue tiene que ser tipo JSON para que podamos identificarla. Debe tener los campos de name, email y user, Gracias =)"
-      }
-      github.post "#{endPointGitHub}/issues/#{numberIssue}/comments", param, (issue, error) ->
-       if error then console.log error
-       res.send "Contestada la issue #{numberIssue} al no cumplir los requisitos previos"
-    else
-      github.patch "#{endPointGitHub}/issues/#{numberIssue}", {state: "closed"}, (issue, error) ->
-       if error then console.log error
-       res.send "OK. He cerrado la issue #{numberIssue} al no cumplir los requisitos previos"
-
   #Initialize a dialog with bot
   showDialog = (msg, initial) ->
    dialog = switchBoard.startDialog(msg);
@@ -84,11 +46,29 @@ module.exports = (robot) ->
 
    dialog.addChoice /listar/i, (msg2) ->
     viewIssue(msg2)
-   dialog.addChoice /ver la issue (.*)/i, (msg2) ->
+   dialog.addChoice /ver issue (.*)/i, (msg2) ->
     numberIssue = msg2.match[1]
     viewSpecificIssue(msg2, numberIssue)
-   dialog.addChoice /salir/, (msg3) ->
-    msg3.reply "Un placer asistirte. Good bye!"
+   dialog.addChoice /ver usuarios/, (msg3) ->
+    viewUsersInSystem(msg3)
+   dialog.addChoice /salir/, (msg4) ->
+    msg4.reply "Un placer asistirte. Good bye!"
+
+  #Initialize a dialog with bot
+  showDialogIssue = (msg, numberIssue, issue) ->
+    dialog = switchBoard.startDialog(msg);
+
+    msg.reply "Deseas Aceptar, Responder, Cerrar u otras opciones disponibles?"
+
+    dialog.addChoice /aceptar/i, (msg1) ->
+      acceptIssue(msg1, numberIssue, issue)
+    dialog.addChoice /responder/i, (msg2) ->
+      numberIssue = msg2.match[1]
+      respondIssueDialog(msg2, numberIssue)
+    dialog.addChoice /cerrar/, (msg3) ->
+      closedIssue(msg3, numberIssue)
+    dialog.addChoice /otras (.*)/, (msg4) ->
+      showDialog(msg4)
 
   #Method to view all issues
   viewIssue = (msg) ->
@@ -101,11 +81,80 @@ module.exports = (robot) ->
       msg.send "Tus issues son:\n#{text}"
       showDialog(msg)
 
-  #Method to view specific issue
+  #Method to close issue
+  acceptIssue = (msg, numberIssue, issue) ->
+    github.get "https://api.github.com/users/#{issue.user.login}", {}, (userInfo) ->
+      if !userInfo.email
+        respondIssue(msg, numberIssue, "Debes rellenar tu email")
+      else
+        msg.send "Issue número: #{numberIssue} con issue\n#{userInfo.email}\n#{userInfo.name}\n#{userInfo.login}"
+        msg.http('https://raw.githubusercontent.com/BEEVA-bots-poc/access/master/CONTRIBUTORS.json').get() (err, httpRes, body) ->
+        users = JSON.parse body
+        users.contributors.push ({"name":userInfo.name,"email":userInfo.email,"git":userInfo.login})
+        github.get "#{endPointGitHub}/contents/CONTRIBUTORS.json", {}, (infoCommit) ->
+         contentCommit = new Buffer(JSON.stringify users).toString('base64')
+         param = {
+          message: "Added new User to repo",
+          content: contentCommit,
+          sha: infoCommit.sha
+         }
+         github.put "#{endPointGitHub}/contents/CONTRIBUTORS.json", param, (issue) ->
+          github.patch "#{endPointGitHub}/issues/#{numberIssue}", {state: "closed"}, (issue, error) ->
+           msg.send "OK. He aceptado la issue #{numberIssue} y he añadido el usuario al contributors"
+
+  #Method to close issue
+  closedIssue = (msg, numberIssue) ->
+    github.patch "#{endPointGitHub}/issues/#{numberIssue}", {state: "closed"}, (issue, error) ->
+      if error
+        msg.send "Error, por favor intentalo más tarde"
+        showDialog(msg)
+      else
+        msg.send "Issue número: #{numberIssue} cerrada."
+
+  #Method to responde issue to user
+  respondIssueDialog = (msg, numberIssue) ->
+    dialog = switchBoard.startDialog(msg);
+
+    msg.reply "¿Qué deseas contestar al usuario?"
+
+    dialog.addChoice /(.*)/i, (msg1) ->
+      text = msg1.match[1]
+      msg1.reply "¿Estás seguro de la respuesta?: #{text}"
+
+      dialog.addChoice /si/, (msg2) ->
+        respondIssue(msg2, numberIssue, text)
+      dialog.addChoice /no/, (msg3) ->
+        msg1.reply "¿Deseas salir o volver a escribir?"
+
+        dialog.addChoice /volver (.*)/, (msg2) ->
+          respondIssueDialog(msg2, numberIssue)
+        dialog.addChoice /salir/, (msg3) ->
+          showDialog(msg3)
+
+  #Method to view all users registered in repo
+  respondIssue = (msg, numberIssue, text) ->
+    param = {
+      body: "#{text}"
+    }
+    github.post "#{endPointGitHub}/issues/#{numberIssue}/comments", param, (issue, error) ->
+      if error
+        msg.send "Error, por favor intentalo más tarde"
+        showDialog(msg)
+      else msg.send "Contestada la issue #{numberIssue}"
+
+  #Method to view all users registered in repo
+  viewUsersInSystem = (msg) ->
+    github.get "#{endPointGitHub}/contents/CONTRIBUTORS.json", {}, (contributors) ->
+     content = JSON.parse new Buffer(contributors.content, 'base64').toString()
+     for i, index in  content.contributors
+      msg.send "Usuario del sistema número #{index + 1}: #{i.name}"
+      showDialog(msg)
+
+  #Method to view specific issue and user can do actions with specific issue
   viewSpecificIssue = (msg, numberIssue) ->
     getIssues(numberIssue, {}).then (issue) ->
      msg.send "[#{issue.number}] #{issue.title} realizada por #{issue.user.login} con el contenido #{issue.body}\n"
-     showDialog(msg)
+     showDialogIssue(msg, numberIssue, issue)
 
   #Method get issues (all or specific issue)
   getIssues = (numberIssue, state) ->
