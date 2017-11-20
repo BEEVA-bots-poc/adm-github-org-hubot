@@ -16,10 +16,21 @@
 #     Enter your Github password when prompted. When you get a response, look for the "token" value
 #
 # Commands:
-#   hubot listar issues
-#   hubot Quiero ver la número <number>
-#   hubot Quiero ver los usuarios del sistema
-#   hubot Quiero <option> issue número <number>
+#   hubot acciones git hub con issues
+#    |
+#     -> listar
+#    |
+#     -> ver issue <number>
+#       |
+#        -> aceptar
+#       |
+#        -> rechazar
+#       |
+#        -> responder
+#    |
+#     -> ver usuarios
+#    |
+#     -> salir
 #
 # Author: Julian Pérez Sampedro
 
