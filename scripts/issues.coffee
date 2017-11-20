@@ -75,7 +75,6 @@ module.exports = (robot) ->
     dialog.addChoice /aceptar/i, (msg1) ->
       acceptIssue(msg1, numberIssue, issue)
     dialog.addChoice /responder/i, (msg2) ->
-      numberIssue = msg2.match[1]
       respondIssueDialog(msg2, numberIssue)
     dialog.addChoice /cerrar/, (msg3) ->
       closedIssue(msg3, numberIssue)
@@ -133,6 +132,7 @@ module.exports = (robot) ->
       msg1.reply "¿Estás seguro de la respuesta?: #{text}"
 
       dialog.addChoice /si/, (msg2) ->
+        msg1.reply "¿Estás seguro de la respuesta?: #{text}"
         respondIssue(msg2, numberIssue, text)
       dialog.addChoice /no/, (msg3) ->
         msg1.reply "¿Deseas salir o volver a escribir?"
@@ -145,8 +145,9 @@ module.exports = (robot) ->
   #Method to view all users registered in repo
   respondIssue = (msg, numberIssue, text) ->
     param = {
-      body: "#{text}"
+      body: text
     }
+    msg.send "#{numberIssue}"
     github.post "#{endPointGitHub}/issues/#{numberIssue}/comments", param, (issue, error) ->
       if error
         msg.send "Error, por favor intentalo más tarde"
