@@ -152,7 +152,9 @@ module.exports = (robot) ->
       if error
         msg.send "Error, por favor intentalo más tarde"
         showDialog(msg)
-      else msg.send "Contestada la issue #{numberIssue}"
+      else
+      msg.send "Contestada la issue #{numberIssue}"
+      showDialog(msg)
 
   #Method to view all users registered in repo
   viewUsersInSystem = (msg) ->
