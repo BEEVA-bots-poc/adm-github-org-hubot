@@ -54,7 +54,7 @@ module.exports = (robot) ->
    if initial
     msg.reply "¿Buenos días, que deseas hacer con las issues?"
    else
-    msg.reply "Deseas salir o realizar alguna petición más"
+    msg.reply "Deseas salir o realizar alguna petición más?"
 
    dialog.addChoice /listar/i, (msg2) ->
     viewIssue(msg2)
@@ -132,7 +132,6 @@ module.exports = (robot) ->
       msg1.reply "¿Estás seguro de la respuesta?: #{text}"
 
       dialog.addChoice /si/, (msg2) ->
-        msg1.reply "¿Estás seguro de la respuesta?: #{text}"
         respondIssue(msg2, numberIssue, text)
       dialog.addChoice /no/, (msg3) ->
         msg1.reply "¿Deseas salir o volver a escribir?"
