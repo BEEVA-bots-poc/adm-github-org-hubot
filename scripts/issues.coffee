@@ -160,7 +160,7 @@ module.exports = (robot) ->
     github.get "#{endPointGitHub}/contents/CONTRIBUTORS.json", {}, (contributors) ->
      content = JSON.parse new Buffer(contributors.content, 'base64').toString()
      for i in  content.contributors
-      msg.send "Usuario del sistema número: #{i.name}"
+      msg.send "Usuario del sistema: #{i.name}"
     showDialog(msg)
 
   #Method to view specific issue and user can do actions with specific issue
