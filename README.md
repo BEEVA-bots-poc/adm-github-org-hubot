@@ -1,4 +1,4 @@
-#adm-github-org-hubot-slack
+## adm-github-org-hubot-slack
 
 Manage contributos in organization with hubot with slack
 
@@ -38,19 +38,19 @@ hubotslack> [6] test report realizada por josex2r con el contenido checking repo
 
 user1>> aceptar/responder/cerrar
 
-//Aceptar
+**Aceptar**
 hubotslack> OK. He aceptado la issue <Issue's number> y he añadido el usuario al contributors
-//Responder
+**Responder**
 hubotslack> ¿Qué deseas contestar al usuario?
 user1>> text to respond to the user
 hubotslack> ¿Estás seguro de la respuesta?: <text>
 user1>> si/no
-//si
-hubotslack> Contestada la issue #{numberIssue}
-//no
-hubotslack> ¿Deseas salir o volver a escribir?
-user1>> text to respond to the user
-//Cerrar
+    **si**
+    hubotslack> Contestada la issue #{numberIssue}
+    **no**
+    hubotslack> ¿Deseas salir o volver a escribir?
+    user1>> text to respond to the user
+**Cerrar**
 hubotslack> Issue número: <Issue's number> cerrada.
 
 user1>> @hubotslack ver usuarios
