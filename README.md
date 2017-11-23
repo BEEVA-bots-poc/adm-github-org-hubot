@@ -1,8 +1,10 @@
 ## adm-github-org-hubot-slack
 
-Manage contributos in organization with hubot with slack
+Manage the members of a Github organization talking to an Slack chatbot.
 
-See [`scripts/issues.coffee`](scripts/issues.coffee) for full documentation.
+To test the chatbot use the **Slack Channel** [**adm-github-org.slack.com**](https://adm-github-org.slack.com/) and read the file [`scripts/issues.coffee`](scripts/issues.coffee) for more info.
+
+> To request access to the organization open an issue in [this](https://github.com/BEEVA-bots-poc/access) repo.
 
 ## Installation
 
